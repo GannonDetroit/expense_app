@@ -9,11 +9,12 @@ class TransactionList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        // spread operator solves a bug about a list of widgets not working with map
-        // to put a dynamic amount of objects in a column use map and return whatever widget you want but add .toList() at the end.
-        ...transactions.map((tx) {
+    return Container(
+      height: 300,
+      child: ListView.builder(
+        // ^^ essentailly a column with SingleChildScrollView but has nice built in features. has an infinite height so set it in something like a container with a height, or just make the whole app body a SingleChildScrollView.
+        itemBuilder: (context, index) {
+          //context and index are needed params for itemBuilder.
           return Card(
             child: Row(
               children: <Widget>[
@@ -24,7 +25,7 @@ class TransactionList extends StatelessWidget {
                       border: Border.all(color: Colors.purple, width: 2)),
                   child: Text(
                     //This is how you can use string interpulation and how to show dollar signs since they are a reserved character in dart, so \$ to show them.
-                    '\$ ${tx.amount}',
+                    '\$ ${transactions[index].amount}',
                     style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 20,
@@ -40,7 +41,8 @@ class TransactionList extends StatelessWidget {
                           TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                     Text(
-                      DateFormat('MMM dd, yyyy').format(tx.date),
+                      DateFormat('MMM dd, yyyy')
+                          .format(transactions[index].date),
                       style: TextStyle(color: Colors.grey),
                     )
                   ],
@@ -48,8 +50,9 @@ class TransactionList extends StatelessWidget {
               ],
             ),
           );
-        }).toList(),
-      ],
+        },
+        itemCount: transactions.length,
+      ),
     );
   }
 }
