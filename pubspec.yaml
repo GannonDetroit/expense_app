@@ -20,9 +20,11 @@ version: 1.0.0+1
 environment:
   sdk: ">=2.11.0 <3.0.0"
 
+# WHITE SPACE MATTERS!!! mind you indenting on this file.
 dependencies:
   flutter:
     sdk: flutter
+  intl: ^0.17.0
 
 
   # The following adds the Cupertino Icons font to your application.
