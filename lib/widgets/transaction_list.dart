@@ -25,7 +25,7 @@ class TransactionList extends StatelessWidget {
                       border: Border.all(color: Colors.purple, width: 2)),
                   child: Text(
                     //This is how you can use string interpulation and how to show dollar signs since they are a reserved character in dart, so \$ to show them.
-                    '\$ ${transactions[index].amount}',
+                    '\$ ${transactions[index].amount.toStringAsFixed(2)}', //toStringAsFixed(2) means it will be no more and no less than 2 decimal places
                     style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 20,
@@ -36,7 +36,7 @@ class TransactionList extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      tx.title,
+                      transactions[index].title,
                       style:
                           TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
