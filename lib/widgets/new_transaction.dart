@@ -1,11 +1,19 @@
 import 'package:flutter/material.dart';
 
-class NewTransaction extends StatelessWidget {
+//changed to a stateful widget even though I don't use state because it will maintain the inputted data, when this was stateless it would not
+//keep the data when entered into the textfields when I switched to the other textfields because of re-rendering aspects of flutter internals.
+//TL;DR if there are inputs.... make it stateful, even if not using state.
+class NewTransaction extends StatefulWidget {
   NewTransaction(this.addTransaction);
 
   final Function addTransaction;
-  final titleController =
-      TextEditingController(); //controllers listen to user input and save it. Flutter likes this in stateless widgets over using onChange and saving to a variable.
+
+  @override
+  State<NewTransaction> createState() => _NewTransactionState();
+}
+
+class _NewTransactionState extends State<NewTransaction> {
+  final titleController = TextEditingController();
   final amountController = TextEditingController();
 
   void SubmitData() {
@@ -15,8 +23,12 @@ class NewTransaction extends StatelessWidget {
     if (enteredTitle.isEmpty || enteredAmount <= 0) {
       return; //doing an empty return because it literally does nothing.
     } else {
-      addTransaction(enteredTitle, enteredAmount);
+      //this widget. came from the refactor effect, it allows me access to properties and methods in the top widget class from this stateclass, since
+      //these are technically two seperate classes.... this is how we share info between them and thus bow I can access the addTransaction method in here.
+      widget.addTransaction(enteredTitle, enteredAmount);
     }
+    //how we auto close the widget on submission, again context is just meta data for flutter intenals.
+    Navigator.of(context).pop();
   }
 
   @override
