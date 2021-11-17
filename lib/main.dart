@@ -9,12 +9,34 @@ import './models/transactions.dart';
 
 void main() => runApp(MyApp());
 
+final ThemeData theme = ThemeData();
+
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter App',
+      title: 'Personal Expenses',
+      //primaySwatch is best because it auto generates different shade variations of your primary color which many flutter featues will use to make the app look better. just doing primary color will ONLY do that one color.
+      theme: ThemeData(
+          fontFamily: 'Quicksand',
+          colorScheme: ColorScheme.fromSwatch(
+            primarySwatch: Colors.purple,
+          ).copyWith(
+            secondary: Colors.amber,
+          ),
+          textTheme: ThemeData.light().textTheme.copyWith(
+              bodyText2: TextStyle(
+                  fontFamily: 'OpenSans',
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18)),
+          appBarTheme: AppBarTheme(
+              titleTextStyle: TextStyle(
+                  fontFamily: 'OpenSans',
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold))),
+
       home: MyHomePage(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
@@ -69,7 +91,9 @@ class _MyHomePageState extends State<MyHomePage> {
               onPressed: () => _startAddNewTransaction(context),
               icon: Icon(Icons.add))
         ],
-        title: const Text('Flutter App'),
+        title: const Text(
+          'Personal Expenses',
+        ),
       ),
       body: SingleChildScrollView(
         child: Column(
