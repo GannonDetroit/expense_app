@@ -3,8 +3,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/widgets/new_transaction.dart';
 import 'package:flutter_complete_guide/widgets/transaction_list.dart';
+
 import './widgets/new_transaction.dart';
 import './widgets/transaction_list.dart';
+import './widgets/chart.dart';
 import './models/transactions.dart';
 
 void main() => runApp(MyApp());
@@ -58,6 +60,17 @@ class _MyHomePageState extends State<MyHomePage> {
     //     date: DateTime.now())
   ];
 
+  List<Transaction> get _recentTransactions {
+    //an alternative way to iternative over data instead of using a for-loop, for example sake. where method that dart offers on lists
+    //where lets you run a function on all items in a list, if it returns true the item is kept in a newly returned list. So we are using this
+    //to compare the date of each transaction and make sure it's from within the last 7 days.
+    return _userTransactions.where((tx) {
+      return tx.date.isAfter(DateTime.now().subtract(
+        Duration(days: 7),
+      ));
+    }).toList(); //where returns an interable, but we want it to be a list to avoid a bug. so add .toList and all good.
+  }
+
   void _addNewTransaction(String txTitle, double txAmount) {
     final newTx = Transaction(
       title: txTitle,
@@ -103,15 +116,7 @@ class _MyHomePageState extends State<MyHomePage> {
               CrossAxisAlignment.stretch, //adjust its look hoizontally.
           children: [
             //Note: Card will assume the size of its child unless you specify for it to be bigger with a container (either wrap the card with a container with set width or do it to its child).
-            Card(
-              child: Container(
-                child: Text('CHART!'),
-                width: double.infinity,
-              ),
-              color: Colors.blue,
-              elevation:
-                  5, //how 'high' or 'forward' this card looks. so the drop shadow is stronger too.
-            ),
+            Chart(_recentTransactions),
             TransactionList(_userTransactions),
           ],
         ),
