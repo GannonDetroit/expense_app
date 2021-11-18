@@ -57,8 +57,9 @@ class Chart extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: groupedTransactionValues.map((data) {
             //                                           using the amount, turning it into a double and dividing by totalSpending to get the percent amount
-            //the flixbile widget takes a fit arg (loose or tight, we will use tight) and forces it to use its availabe space instead of screwing up other widgets.
-            //you could also use the flex: key and give one widget 1 and another 2 so the 2 gets twice the space as the 1 if thats what you want too.
+            //the flixbile widget takes a fit arg (loose is default, so we almost always use will tight) and forces it to use its availabe space instead of screwing up other widgets.
+            //you could also use the flex: key and give one widget 1 and another 2, flutter will add it and give the object with weight two 2/3rds of the space and the 1 only 1/3 of the space. You can make the ratios whatever.
+            //you could also do Expanded(flex: value) since its basically just Flexible with FlexFit.tight, but less verbose.
             return Flexible(
               fit: FlexFit.tight,
               child: ChartBar(
