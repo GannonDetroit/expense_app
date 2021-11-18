@@ -51,17 +51,26 @@ class Chart extends StatelessWidget {
     return Card(
       elevation: 6,
       margin: EdgeInsets.all(20),
-      child: Row(
-        children: groupedTransactionValues.map((data) {
-          //                                           using the amount, turning it into a double and dividing by totalSpending to get the percent amount
-          return ChartBar(
-              data['day'],
-              data['amount'],
-              //check to see if spending is zero (no transaction) and if so, set it to zero to avoid a bug, if not zero divide to get the percentage we want.
-              totalSpending == 0.0
-                  ? 0.0
-                  : (data['amount'] as double) / totalSpending);
-        }).toList(),
+      child: Container(
+        padding: EdgeInsets.all(10),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: groupedTransactionValues.map((data) {
+            //                                           using the amount, turning it into a double and dividing by totalSpending to get the percent amount
+            //the flixbile widget takes a fit arg (loose or tight, we will use tight) and forces it to use its availabe space instead of screwing up other widgets.
+            //you could also use the flex: key and give one widget 1 and another 2 so the 2 gets twice the space as the 1 if thats what you want too.
+            return Flexible(
+              fit: FlexFit.tight,
+              child: ChartBar(
+                  data['day'],
+                  data['amount'],
+                  //check to see if spending is zero (no transaction) and if so, set it to zero to avoid a bug, if not zero divide to get the percentage we want.
+                  totalSpending == 0.0
+                      ? 0.0
+                      : (data['amount'] as double) / totalSpending),
+            );
+          }).toList(),
+        ),
       ),
     );
   }
