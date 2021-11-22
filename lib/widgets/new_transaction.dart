@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 //changed to a stateful widget even though I don't use state because it will maintain the inputted data, when this was stateless it would not
 //keep the data when entered into the textfields when I switched to the other textfields because of re-rendering aspects of flutter internals.
@@ -13,12 +14,14 @@ class NewTransaction extends StatefulWidget {
 }
 
 class _NewTransactionState extends State<NewTransaction> {
-  final titleController = TextEditingController();
-  final amountController = TextEditingController();
+  final _titleController = TextEditingController();
+  final _amountController = TextEditingController();
+  DateTime
+      _selectedDate; //this is NOT final because its vaule can/will change with the date picker after this widget is initialized.
 
-  void SubmitData() {
-    final enteredTitle = titleController.text;
-    final enteredAmount = double.parse(amountController.text);
+  void _submitData() {
+    final enteredTitle = _titleController.text;
+    final enteredAmount = double.parse(_amountController.text);
 
     if (enteredTitle.isEmpty || enteredAmount <= 0) {
       return; //doing an empty return because it literally does nothing.
@@ -29,6 +32,25 @@ class _NewTransactionState extends State<NewTransaction> {
     }
     //how we auto close the widget on submission, again context is just meta data for flutter intenals.
     Navigator.of(context).pop();
+  }
+
+//configures the date picker, a widget given to me by flutter, notice it returns a Future class with a DateTime object (Future is like an await in JS, commonly used in HTTP requests)
+  void _presentDatePicker() {
+    //unlike in JS, this program will NOT pause for the .then, it will store in memory the info, but if I did a Print() right after the .then it would NOT have the finished info in it, this is an unblocking .then
+    showDatePicker(
+            context: context,
+            initialDate: DateTime.now(),
+            firstDate: DateTime(2021),
+            lastDate: DateTime.now())
+        .then((pickedDate) {
+      if (pickedDate == null) {
+        return; //this blank return is like return null;
+      } else {
+        setState(() {
+          _selectedDate = pickedDate;
+        });
+      }
+    });
   }
 
   @override
@@ -42,13 +64,13 @@ class _NewTransactionState extends State<NewTransaction> {
           children: <Widget>[
             TextField(
               decoration: InputDecoration(labelText: 'Title'),
-              controller: titleController,
+              controller: _titleController,
             ),
             TextField(
               decoration: InputDecoration(labelText: 'Amount'),
-              controller: amountController,
+              controller: _amountController,
               onSubmitted: (_) =>
-                  SubmitData(), //need to have _ , just because of how onSubmitted works it needs a 'value' so _ is a convention for showing its nothing, even though its a void function.
+                  _submitData(), //need to have _ , just because of how onSubmitted works it needs a 'value' so _ is a convention for showing its nothing, even though its a void function.
               keyboardType: TextInputType.numberWithOptions(
                   decimal:
                       true), //reason we do this is sometimes iOS wont' allow for decimal, so this Option version avoids bugs
@@ -57,11 +79,15 @@ class _NewTransactionState extends State<NewTransaction> {
               height: 70,
               child: Row(
                 children: [
-                  Text(
-                    'No Date Chosen',
+                  Expanded(
+                    child: Text(
+                      _selectedDate == null
+                          ? 'No Date Chosen'
+                          : 'Picked Date: ${DateFormat.yMd().format(_selectedDate)}',
+                    ),
                   ),
                   TextButton(
-                    onPressed: () {},
+                    onPressed: _presentDatePicker,
                     child: Text(
                       'Choose Date',
                       style: TextStyle(fontWeight: FontWeight.bold),
@@ -74,7 +100,7 @@ class _NewTransactionState extends State<NewTransaction> {
               ),
             ),
             TextButton(
-                onPressed: SubmitData,
+                onPressed: _submitData,
                 child: Text(
                   'Add Transaction',
                 ),
