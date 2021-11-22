@@ -23,12 +23,17 @@ class _NewTransactionState extends State<NewTransaction> {
     final enteredTitle = _titleController.text;
     final enteredAmount = double.parse(_amountController.text);
 
-    if (enteredTitle.isEmpty || enteredAmount <= 0) {
-      return; //doing an empty return because it literally does nothing.
+    //data validation to make sure an amount is added to avoid a bug
+    if (_amountController.text.isEmpty) {
+      return;
+    }
+    //data validation to make sure a title, an amount over zero, and a date are selected to help avoid a bug.
+    if (enteredTitle.isEmpty || enteredAmount <= 0 || _selectedDate == null) {
+      return; //doing an empty return because it literally does nothing, like returning null.
     } else {
       //this widget. came from the refactor effect, it allows me access to properties and methods in the top widget class from this stateclass, since
       //these are technically two seperate classes.... this is how we share info between them and thus bow I can access the addTransaction method in here.
-      widget.addTransaction(enteredTitle, enteredAmount);
+      widget.addTransaction(enteredTitle, enteredAmount, _selectedDate);
     }
     //how we auto close the widget on submission, again context is just meta data for flutter intenals.
     Navigator.of(context).pop();
