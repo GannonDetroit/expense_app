@@ -20,12 +20,15 @@ class MyApp extends StatelessWidget {
       title: 'Personal Expenses',
       //primaySwatch is best because it auto generates different shade variations of your primary color which many flutter featues will use to make the app look better. just doing primary color will ONLY do that one color.
       theme: ThemeData(
+          primarySwatch: Colors.purple,
           fontFamily: 'Quicksand',
           colorScheme: ColorScheme.fromSwatch(
             primarySwatch: Colors.purple,
-          ).copyWith(
-            secondary: Colors.amber,
-          ),
+          )
+              .copyWith(
+                secondary: Colors.amber,
+              )
+              .copyWith(error: Colors.red),
           textTheme: ThemeData.light().textTheme.copyWith(
               headline6: TextStyle(
                   fontFamily: 'OpenSans',
@@ -52,13 +55,6 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final List<Transaction> _userTransactions = [
     //understand using the word final means the pointer to this list is final, not the list iteself! so I can add and mutate this list even though it says final at first.
-    // Transaction(
-    //     id: 't1', title: 'New Shoes', amount: 69.99, date: DateTime.now()),
-    // Transaction(
-    //     id: 't2',
-    //     title: 'Weekly Groceries',
-    //     amount: 16.53,
-    //     date: DateTime.now())
   ];
 
   List<Transaction> get _recentTransactions {
@@ -83,6 +79,15 @@ class _MyHomePageState extends State<MyHomePage> {
 
     setState(() {
       _userTransactions.add(newTx);
+    });
+  }
+
+  void _deleteTransaction(String id) {
+    setState(() {
+      //allows me to go over a data set and delete anything that meets the specified condition.
+      _userTransactions.removeWhere((transaction) {
+        return transaction.id == id;
+      });
     });
   }
 
@@ -119,7 +124,8 @@ class _MyHomePageState extends State<MyHomePage> {
           children: [
             //Note: Card will assume the size of its child unless you specify for it to be bigger with a container (either wrap the card with a container with set width or do it to its child).
             Chart(_recentTransactions),
-            TransactionList(_userTransactions),
+            TransactionList(_userTransactions,
+                _deleteTransaction), //don't worry about the args, this is just passing a pointer to the function
           ],
         ),
       ),

@@ -4,8 +4,10 @@ import '../models/transactions.dart';
 
 class TransactionList extends StatelessWidget {
   final List<Transaction> transactions;
+  //this is passing a pointer to the function, so don't worry about the invoking here, thats for below.
+  final Function deleteTransaction;
 
-  TransactionList(this.transactions);
+  TransactionList(this.transactions, this.deleteTransaction);
 
   @override
   Widget build(BuildContext context) {
@@ -99,6 +101,12 @@ class TransactionList extends StatelessWidget {
                     subtitle: Text(
                       DateFormat.yMMMd().format(transactions[index].date),
                     ),
+                    trailing: IconButton(
+                        icon: Icon(Icons.delete),
+                        onPressed: () {
+                          deleteTransaction(transactions[index].id);
+                        },
+                        color: Theme.of(context).colorScheme.error),
                   ),
                 );
               },
