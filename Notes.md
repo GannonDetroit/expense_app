@@ -10,3 +10,4 @@ when making a number keyboard options do this:
               controller: amountController,
               keyboardType: TextInputType.numberWithOptions(decimal: true), //reason we do this is sometimes iOS wont' allow for decimal, so this Option version avoids bugs
             ),
+

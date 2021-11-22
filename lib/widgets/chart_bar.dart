@@ -12,7 +12,10 @@ class ChartBar extends StatelessWidget {
     return Column(
       children: [
         //fittedbox forces its child into the aviable space, even shrinking the text font size dynamically.
-        FittedBox(child: Text('\$${spendingAmount.toStringAsFixed(0)}')),
+        Container(
+            height: 20,
+            child: FittedBox(
+                child: Text('\$${spendingAmount.toStringAsFixed(0)}'))),
         SizedBox(
           height: 4,
         ),
