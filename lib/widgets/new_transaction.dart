@@ -53,11 +53,34 @@ class _NewTransactionState extends State<NewTransaction> {
                   decimal:
                       true), //reason we do this is sometimes iOS wont' allow for decimal, so this Option version avoids bugs
             ),
+            Container(
+              height: 70,
+              child: Row(
+                children: [
+                  Text(
+                    'No Date Chosen',
+                  ),
+                  TextButton(
+                    onPressed: () {},
+                    child: Text(
+                      'Choose Date',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    style: TextButton.styleFrom(
+                      primary: Theme.of(context).colorScheme.primary,
+                    ),
+                  )
+                ],
+              ),
+            ),
             TextButton(
                 onPressed: SubmitData,
-                child: Text('Add Transaction'),
+                child: Text(
+                  'Add Transaction',
+                ),
                 style: TextButton.styleFrom(
-                    primary: Theme.of(context).primaryColor)),
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    primary: Theme.of(context).textTheme.button.color)),
           ],
         ),
       ),
