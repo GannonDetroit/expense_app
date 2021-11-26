@@ -60,59 +60,67 @@ class _NewTransactionState extends State<NewTransaction> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 5,
-      child: Container(
-        padding: EdgeInsets.all(10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: <Widget>[
-            TextField(
-              decoration: InputDecoration(labelText: 'Title'),
-              controller: _titleController,
-            ),
-            TextField(
-              decoration: InputDecoration(labelText: 'Amount'),
-              controller: _amountController,
-              onSubmitted: (_) =>
-                  _submitData(), //need to have _ , just because of how onSubmitted works it needs a 'value' so _ is a convention for showing its nothing, even though its a void function.
-              keyboardType: TextInputType.numberWithOptions(
-                  decimal:
-                      true), //reason we do this is sometimes iOS wont' allow for decimal, so this Option version avoids bugs
-            ),
-            Container(
-              height: 70,
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      _selectedDate == null
-                          ? 'No Date Chosen'
-                          : 'Picked Date: ${DateFormat.yMd().format(_selectedDate)}',
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: _presentDatePicker,
-                    child: Text(
-                      'Choose Date',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    style: TextButton.styleFrom(
-                      primary: Theme.of(context).colorScheme.primary,
-                    ),
-                  )
-                ],
+    return SingleChildScrollView(
+      child: Card(
+        elevation: 5,
+        child: Container(
+          //only allows us to target each side individually for padding, since we want to the bottom size to be dynamic by using viewInsets that allows
+          //us to deal with things that overlap our view (like the keyboard).
+          padding: EdgeInsets.only(
+              top: 10,
+              left: 10,
+              right: 10,
+              bottom: MediaQuery.of(context).viewInsets.bottom + 10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: <Widget>[
+              TextField(
+                decoration: InputDecoration(labelText: 'Title'),
+                controller: _titleController,
               ),
-            ),
-            TextButton(
-                onPressed: _submitData,
-                child: Text(
-                  'Add Transaction',
+              TextField(
+                decoration: InputDecoration(labelText: 'Amount'),
+                controller: _amountController,
+                onSubmitted: (_) =>
+                    _submitData(), //need to have _ , just because of how onSubmitted works it needs a 'value' so _ is a convention for showing its nothing, even though its a void function.
+                keyboardType: TextInputType.numberWithOptions(
+                    decimal:
+                        true), //reason we do this is sometimes iOS wont' allow for decimal, so this Option version avoids bugs
+              ),
+              Container(
+                height: 70,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        _selectedDate == null
+                            ? 'No Date Chosen'
+                            : 'Picked Date: ${DateFormat.yMd().format(_selectedDate)}',
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: _presentDatePicker,
+                      child: Text(
+                        'Choose Date',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      style: TextButton.styleFrom(
+                        primary: Theme.of(context).colorScheme.primary,
+                      ),
+                    )
+                  ],
                 ),
-                style: TextButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                    primary: Theme.of(context).textTheme.button.color)),
-          ],
+              ),
+              TextButton(
+                  onPressed: _submitData,
+                  child: Text(
+                    'Add Transaction',
+                  ),
+                  style: TextButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      primary: Theme.of(context).textTheme.button.color)),
+            ],
+          ),
         ),
       ),
     );
