@@ -104,17 +104,20 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        actions: [
-          IconButton(
-              onPressed: () => _startAddNewTransaction(context),
-              icon: Icon(Icons.add))
-        ],
-        title: const Text(
-          'Personal Expenses',
-        ),
+    //storing the AppBar widget in this appBar variable because doing it this way allows the appBar varible to be assisible anywhere most importantly
+    //gives me information about its height, which I can use for helping make my app more responsive and adapative.
+    final appBar = AppBar(
+      actions: [
+        IconButton(
+            onPressed: () => _startAddNewTransaction(context),
+            icon: Icon(Icons.add))
+      ],
+      title: const Text(
+        'Personal Expenses',
       ),
+    );
+    return Scaffold(
+      appBar: appBar,
       body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment:
@@ -123,9 +126,25 @@ class _MyHomePageState extends State<MyHomePage> {
               CrossAxisAlignment.stretch, //adjust its look hoizontally.
           children: [
             //Note: Card will assume the size of its child unless you specify for it to be bigger with a container (either wrap the card with a container with set width or do it to its child).
-            Chart(_recentTransactions),
-            TransactionList(_userTransactions,
-                _deleteTransaction), //don't worry about the args, this is just passing a pointer to the function
+            //we are going to wrap this in a container to give it responsive height, and make it account for the appBars height info too.
+            //notice we need to deduct the appBar height and status bar (via .of(context.padding.top)) height from both/all of these to make sure its right.
+            Container(
+              child: Chart(_recentTransactions),
+              //use the MediaQuery class to dynamically find the size of the device this app is running on,
+              // if you end with .size.height or .width, it will take 100% so multiple by a fraction you desire to get the relative size you want, between 0 and 1.
+
+              height: (MediaQuery.of(context).size.height -
+                      appBar.preferredSize.height -
+                      MediaQuery.of(context).padding.top) *
+                  0.4,
+            ),
+            Container(
+              height: (MediaQuery.of(context).size.height -
+                      appBar.preferredSize.height -
+                      MediaQuery.of(context).padding.top) *
+                  0.6,
+              child: TransactionList(_userTransactions, _deleteTransaction),
+            ), //don't worry about the args, this is just passing a pointer to the function
           ],
         ),
       ),
