@@ -1,6 +1,7 @@
 // ignore_for_file: use_key_in_widget_constructors
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_complete_guide/widgets/new_transaction.dart';
 import 'package:flutter_complete_guide/widgets/transaction_list.dart';
 
@@ -9,7 +10,14 @@ import './widgets/transaction_list.dart';
 import './widgets/chart.dart';
 import './models/transactions.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  // //this line must be called before setting preferred orintations, otherwise you get a bug.
+  // WidgetsFlutterBinding.ensureInitialized();
+  // //allows you to set system wide settings for the app, such as disabling landscape mode.
+  // SystemChrome.setPreferredOrientations(
+  //     [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+  runApp(MyApp());
+}
 
 final ThemeData theme = ThemeData();
 
@@ -136,13 +144,13 @@ class _MyHomePageState extends State<MyHomePage> {
               height: (MediaQuery.of(context).size.height -
                       appBar.preferredSize.height -
                       MediaQuery.of(context).padding.top) *
-                  0.4,
+                  0.3,
             ),
             Container(
               height: (MediaQuery.of(context).size.height -
                       appBar.preferredSize.height -
                       MediaQuery.of(context).padding.top) *
-                  0.6,
+                  0.7,
               child: TransactionList(_userTransactions, _deleteTransaction),
             ), //don't worry about the args, this is just passing a pointer to the function
           ],
