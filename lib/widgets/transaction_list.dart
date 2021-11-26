@@ -12,30 +12,32 @@ class TransactionList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return transactions.isEmpty
-        ? Column(
-            children: <Widget>[
-              Text(
-                'No Transactions Yet',
-                style: Theme.of(context).textTheme.headline6,
-              ),
-              //if you don't provide a child to sizedbox, its common to give it just a height and/or width to be used as a spacer/seperator.
-              SizedBox(
-                height: 20,
-              ),
-              //image can use asset, file, memory or network.
-              //  asset is if its a file in our code.
-              //  file is good when we get a file in a different way, like we socket stream it in or something along that line
-              //  network is good when fetching via a URL.
-              Container(
-                //boxfit.cover forces an image to fit into its parent size, but it was column which is infinite, so we added a container to give the image a forced size
-                height: 200,
-                child: Image.asset(
-                  'assets/image/waiting.png',
-                  fit: BoxFit.cover,
+        ? LayoutBuilder(builder: (context, constraints) {
+            return Column(
+              children: <Widget>[
+                Text(
+                  'No Transactions Yet',
+                  style: Theme.of(context).textTheme.headline6,
                 ),
-              )
-            ],
-          )
+                //if you don't provide a child to sizedbox, its common to give it just a height and/or width to be used as a spacer/seperator.
+                SizedBox(
+                  height: 20,
+                ),
+                //image can use asset, file, memory or network.
+                //  asset is if its a file in our code.
+                //  file is good when we get a file in a different way, like we socket stream it in or something along that line
+                //  network is good when fetching via a URL.
+                Container(
+                  //boxfit.cover forces an image to fit into its parent size, but it was column which is infinite, so we added a container to give the image a forced size
+                  height: constraints.maxHeight * 0.6,
+                  child: Image.asset(
+                    'assets/image/waiting.png',
+                    fit: BoxFit.cover,
+                  ),
+                )
+              ],
+            );
+          })
         : ListView.builder(
             // ^^ essentailly a column with SingleChildScrollView but has nice built in features. has an infinite height so set it in something like a container with a height, or just make the whole app body a SingleChildScrollView.
             itemBuilder: (context, index) {
