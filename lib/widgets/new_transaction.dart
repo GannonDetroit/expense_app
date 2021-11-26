@@ -1,5 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import './adaptive_flat_button.dart';
 
 //changed to a stateful widget even though I don't use state because it will maintain the inputted data, when this was stateless it would not
 //keep the data when entered into the textfields when I switched to the other textfields because of re-rendering aspects of flutter internals.
@@ -74,6 +76,7 @@ class _NewTransactionState extends State<NewTransaction> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: <Widget>[
+              // CupertinoTextField() is the iOS alternative sytle widget to TextField.
               TextField(
                 decoration: InputDecoration(labelText: 'Title'),
                 controller: _titleController,
@@ -98,16 +101,7 @@ class _NewTransactionState extends State<NewTransaction> {
                             : 'Picked Date: ${DateFormat.yMd().format(_selectedDate)}',
                       ),
                     ),
-                    TextButton(
-                      onPressed: _presentDatePicker,
-                      child: Text(
-                        'Choose Date',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      style: TextButton.styleFrom(
-                        primary: Theme.of(context).colorScheme.primary,
-                      ),
-                    )
+                    AdaptiveTextButton('Chosoe Date', _presentDatePicker)
                   ],
                 ),
               ),

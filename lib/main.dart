@@ -1,5 +1,6 @@
 // ignore_for_file: use_key_in_widget_constructors
-
+import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_complete_guide/widgets/new_transaction.dart';
@@ -24,6 +25,7 @@ final ThemeData theme = ThemeData();
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    //you might want to do Platform.isiOS ? CupertinoApp() : MaterialApp() but note that CupertinoApp has different theme options and stuff than the MaterialApp, so i'm skipping it for this project to save time since MaterailApp CAN work on iOS that just can have some odd quirks every now and again (mainly for navigation reasons), which don't affect this app.
     return MaterialApp(
       title: 'Personal Expenses',
       //primaySwatch is best because it auto generates different shade variations of your primary color which many flutter featues will use to make the app look better. just doing primary color will ONLY do that one color.
@@ -114,93 +116,129 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    //just putting in a variable as a shortcut because of how many times I call MediaQuery
+    final mediaQuery = MediaQuery.of(context);
     //how to determine device orientation, make final so its only triggered whenever flutter rebuilds the UI.
-    final isLandscape =
-        MediaQuery.of(context).orientation == Orientation.landscape;
+    final isLandscape = mediaQuery.orientation == Orientation.landscape;
     //storing the AppBar widget in this appBar variable because doing it this way allows the appBar varible to be assisible anywhere most importantly
     //gives me information about its height, which I can use for helping make my app more responsive and adapative.
-    final appBar = AppBar(
-      actions: [
-        IconButton(
-            onPressed: () => _startAddNewTransaction(context),
-            icon: Icon(Icons.add))
-      ],
-      title: const Text(
-        'Personal Expenses',
-      ),
-    );
+    //specifying PreferredSizeWidgets avoid a bug with CupertinoNavigation not understanding appBar is PreferredSizeWidget, so we have to state it explicitly.
+    final PreferredSizeWidget appBar = Platform.isIOS
+        ? CupertinoNavigationBar(
+            middle: Text('Personal Expenses'),
+            trailing: Row(
+              //mainAxisSize prevents row and column from taking max size possible and add a restriction
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                //IconButton is a materail UI thing, so this way is like making a custom Icon Button for iOS.
+                GestureDetector(
+                  onTap: () => _startAddNewTransaction(context),
+                  child: Icon(CupertinoIcons.add),
+                )
+              ],
+            ),
+          )
+        : AppBar(
+            actions: [
+              IconButton(
+                  onPressed: () => _startAddNewTransaction(context),
+                  icon: Icon(Icons.add))
+            ],
+            title: const Text(
+              'Personal Expenses',
+            ),
+          );
     //storing this widget in a variable to save on copy and pasting code, which would have resulted when we refactored to handle dynamic rendering based on if we are in landscape or portrait mode.
     final txListWidget = Container(
-      height: (MediaQuery.of(context).size.height -
+      height: (mediaQuery.size.height -
               appBar.preferredSize.height -
-              MediaQuery.of(context).padding.top) *
+              mediaQuery.padding.top) *
           0.7,
       child: TransactionList(_userTransactions, _deleteTransaction),
     ); //don't worry about the args, this is just passing a pointer to the function
-    return Scaffold(
-      appBar: appBar,
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment:
-              MainAxisAlignment.start, //adjust it's look vertically on screen.
-          crossAxisAlignment:
-              CrossAxisAlignment.stretch, //adjust its look hoizontally.
-          children: [
-            //use an if statement with NO {} as shorthand ternary expression for if a widget should or should not be rendered.
-            if (isLandscape)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('Show Chart'),
-                  //value is just true or false, this toggle allows us to switch state to show or not show a widget.
-                  Switch(
-                      value: _showChart,
-                      onChanged: (value) {
-                        setState(() {
-                          _showChart = value;
-                        });
-                      }),
-                ],
-              ),
-            //Note: Card will assume the size of its child unless you specify for it to be bigger with a container (either wrap the card with a container with set width or do it to its child).
-            //we are going to wrap this in a container to give it responsive height, and make it account for the appBars height info too.
-            //notice we need to deduct the appBar height and status bar (via .of(context.padding.top)) height from both/all of these to make sure its right.
-            if (!isLandscape)
-              Container(
-                child: Chart(_recentTransactions),
-                //use the MediaQuery class to dynamically find the size of the device this app is running on,
-                // if you end with .size.height or .width, it will take 100% so multiple by a fraction you desire to get the relative size you want, between 0 and 1.
 
-                height: (MediaQuery.of(context).size.height -
-                        appBar.preferredSize.height -
-                        MediaQuery.of(context).padding.top) *
-                    .3,
-              ),
-            if (!isLandscape) txListWidget,
+    //SafeArea is to help make sure everything is within the boundries of the reserved areas on iOS (like the top part that has the time and wifi symbol and bottom that has the app drawer line thing too)
+    final pageBody = SafeArea(
+        child: SingleChildScrollView(
+      child: Column(
+        mainAxisAlignment:
+            MainAxisAlignment.start, //adjust it's look vertically on screen.
+        crossAxisAlignment:
+            CrossAxisAlignment.stretch, //adjust its look hoizontally.
+        children: [
+          //use an if statement with NO {} as shorthand ternary expression for if a widget should or should not be rendered.
+          if (isLandscape)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Show Chart',
+                  style: Theme.of(context).textTheme.headline6,
+                ),
+                //value is just true or false, this toggle allows us to switch state to show or not show a widget.
+                //using the .adaptive make it auto adapt its UI based on if its on iOS or Android with no other configuration needed.
+                //many flutter widgets have this, check to docs to confirm which widgets do and do not.
+                Switch.adaptive(
+                    activeColor: Theme.of(context).colorScheme.secondary,
+                    value: _showChart,
+                    onChanged: (value) {
+                      setState(() {
+                        _showChart = value;
+                      });
+                    }),
+              ],
+            ),
+          //Note: Card will assume the size of its child unless you specify for it to be bigger with a container (either wrap the card with a container with set width or do it to its child).
+          //we are going to wrap this in a container to give it responsive height, and make it account for the appBars height info too.
+          //notice we need to deduct the appBar height and status bar (via .of(context.padding.top)) height from both/all of these to make sure its right.
+          if (!isLandscape)
+            Container(
+              child: Chart(_recentTransactions),
+              //use the MediaQuery class to dynamically find the size of the device this app is running on,
+              // if you end with .size.height or .width, it will take 100% so multiple by a fraction you desire to get the relative size you want, between 0 and 1.
 
-            if (isLandscape)
-              //using a ternary to determine which widget to render
-              _showChart
-                  ? Container(
-                      child: Chart(_recentTransactions),
-                      //use the MediaQuery class to dynamically find the size of the device this app is running on,
-                      // if you end with .size.height or .width, it will take 100% so multiple by a fraction you desire to get the relative size you want, between 0 and 1.
+              height: (mediaQuery.size.height -
+                      appBar.preferredSize.height -
+                      mediaQuery.padding.top) *
+                  .3,
+            ),
+          if (!isLandscape) txListWidget,
 
-                      height: (MediaQuery.of(context).size.height -
-                              appBar.preferredSize.height -
-                              MediaQuery.of(context).padding.top) *
-                          .7,
-                    )
-                  : txListWidget
-          ],
-        ),
+          if (isLandscape)
+            //using a ternary to determine which widget to render
+            _showChart
+                ? Container(
+                    child: Chart(_recentTransactions),
+                    //use the MediaQuery class to dynamically find the size of the device this app is running on,
+                    // if you end with .size.height or .width, it will take 100% so multiple by a fraction you desire to get the relative size you want, between 0 and 1.
+
+                    height: (mediaQuery.size.height -
+                            appBar.preferredSize.height -
+                            mediaQuery.padding.top) *
+                        .7,
+                  )
+                : txListWidget
+        ],
       ),
-      //Notice how floating action buttons are NOT in the body of this app.
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () => _startAddNewTransaction(context),
-      ),
-    );
+    ));
+
+    return Platform.isIOS
+        ? CupertinoPageScaffold(
+            child: pageBody,
+            navigationBar: appBar,
+          )
+        : Scaffold(
+            appBar: appBar,
+            body: pageBody,
+            //Notice how floating action buttons are NOT in the body of this app, its also an Android only UI type thing, so just render an empty container if on iOS for style reasons.
+            floatingActionButtonLocation:
+                FloatingActionButtonLocation.centerFloat,
+            floatingActionButton: Platform.isIOS
+                ? Container()
+                : FloatingActionButton(
+                    child: Icon(Icons.add),
+                    onPressed: () => _startAddNewTransaction(context),
+                  ),
+          );
   }
 }
